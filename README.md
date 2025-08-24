@@ -38,7 +38,7 @@ To send mail:
 - Use this App Password instead of your real Gmail password
 
  # Screenshot
-![App Screenshot](<img width="2976" height="3968" alt="image" src="https://github.com/user-attachments/assets/61c10f9c-28f9-46a5-9d07-aca14fb842e9" />
+![App Screenshot](<img width="2976" height="3968" alt="[image" src="https://github.com/user-attachments/assets/61c10f9c-28f9-46a5-9d07-aca14fb842e9](https://github.com/FullKumar/SecureTextMailer/blob/main/worksfollows.jpg)" />
 )
 # Security Notes
 - Always use a strong password.
