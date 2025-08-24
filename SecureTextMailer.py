@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# SecureText Mailer – Encrypt, Decrypt & Send Messages Safely (AES-GCM + PBKDF2)
 import base64
 import os
 import smtplib
@@ -9,14 +8,13 @@ import tkinter as tk
 from email.message import EmailMessage
 from tkinter import messagebox
 
-# ---- NEW: cryptography imports ----
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 APP_NAME = "SecureText Mailer"
-UI_SECRET = "1234"   # (Optional) demo secret hint for users, not enforced
-MAGIC = b"STM1"      # to detect our encrypted blobs and avoid double-encryption
+UI_SECRET = "1234"  
+MAGIC = b"STM1"      
 
 def resource_path(rel_path: str) -> str:
     if hasattr(sys, "_MEIPASS"):
@@ -34,20 +32,17 @@ def show_result_window(title: str, content: str, bg="#00bd56"):
     txt.place(x=10, y=40, width=400, height=160)
     txt.insert(tk.END, content)
 
-# ---------- NEW: key derivation + AES-GCM helpers ----------
 def _derive_key(password: str, salt: bytes) -> bytes:
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=200_000,  # strong enough for desktop use
+        iterations=200_000,
     )
     return kdf.derive(password.encode("utf-8"))
 
 def do_encrypt_text(raw: str, password: str) -> str:
-    """Encrypt UTF-8 text using PBKDF2 + AES-GCM.
-       Pack as base64( MAGIC | salt(16) | nonce(12) | ciphertext+tag ).
-    """
+  
     if not password:
         raise ValueError("Password required for encryption")
     salt = os.urandom(16)
@@ -59,7 +54,7 @@ def do_encrypt_text(raw: str, password: str) -> str:
     return blob
 
 def do_decrypt_text(blob_b64: str, password: str) -> str:
-    """Decrypt base64( MAGIC | salt | nonce | ct+tag )."""
+   
     if not password:
         raise ValueError("Password required for decryption")
     try:
@@ -84,13 +79,12 @@ def do_decrypt_text(blob_b64: str, password: str) -> str:
     return pt.decode("utf-8")
 
 def _looks_encrypted_blob(s: str) -> bool:
-    """Heuristic: base64-decode and check MAGIC prefix."""
+   
     try:
         d = base64.b64decode(s.encode("ascii"))
         return len(d) >= len(MAGIC) + 28 and d.startswith(MAGIC)
     except Exception:
         return False
-# ---------------------------------------------------------
 
 def encrypt():
     pwd = code_var.get().strip()
@@ -122,7 +116,7 @@ def decrypt():
         show_result_window("Decryption", dec, "#00bd56")
         last_result_var.set(dec)
     except Exception as e:
-        # Normalize common errors to a friendly message
+    
         msg = str(e)
         if "Wrong password" in msg or "corrupted" in msg:
             messagebox.showerror("Decryption", "Wrong password or corrupted message.")
@@ -130,22 +124,18 @@ def decrypt():
             messagebox.showerror("Decryption", f"Failed to decrypt: {e}")
 
 def reset():
-    code_var.set("")  # user must type a password
+    code_var.set("")  
     text_input.delete("1.0", tk.END)
     email_to_var.set("")
     email_subj_var.set("")
-    # Safer defaults: pull from environment only
+
     smtp_user_var.set(os.getenv("SMTP_USER", ""))
     smtp_pass_var.set(os.getenv("SMTP_PASS", ""))
     encrypt_before_send_var.set(True)
     last_result_var.set("")
 
 def send_email():
-    """Send email with encrypted or plaintext body.
-       If 'Encrypt before sending' is checked:
-         - If message already looks like STM1 blob, send as-is
-         - Else encrypt with current password.
-    """
+
     to_addr = email_to_var.get().strip()
     subject = email_subj_var.get().strip()
     smtp_user = smtp_user_var.get().strip() or os.getenv("SMTP_USER", "")
@@ -179,7 +169,7 @@ def send_email():
             if not pwd:
                 messagebox.showerror("Email", "Enter a password to encrypt before sending.")
                 return
-            # Avoid double-encryption if it's already our STM1 blob
+           
             if not _looks_encrypted_blob(base_text):
                 body = do_encrypt_text(base_text, pwd)
 
@@ -206,7 +196,6 @@ def build_ui():
     root.geometry("420x640")
     root.title(APP_NAME)
 
-    # Optional icon
     try:
         icon_path = resource_path("keys.png")
         if os.path.exists(icon_path):
@@ -217,22 +206,17 @@ def build_ui():
 
     tk.Label(root, text="Enter text for encryption and decryption", fg="black", font=("Calibri", 13)).place(x=10, y=10)
 
-    # Text input
     text_input = tk.Text(root, font=("Arial", 12), bg="white", relief=tk.GROOVE, wrap=tk.WORD, bd=0)
     text_input.place(x=10, y=40, width=395, height=140)
 
-    # Password label
     tk.Label(root, text="Enter secret key (used for AES‑GCM)", fg="black", font=("Calibri", 13)).place(x=10, y=190)
 
-    # Password entry
     code_var = tk.StringVar()
     tk.Entry(root, textvariable=code_var, width=19, bd=0, font=("Arial", 20), show="*").place(x=10, y=215)
 
-    # Buttons (crypto)
     tk.Button(root, text="ENCRYPT", height=2, width=20, bg="#ed3833", fg="white", bd=0, command=encrypt).place(x=10, y=260)
     tk.Button(root, text="DECRYPT", height=2, width=20, bg="#00bd56", fg="white", bd=0, command=decrypt).place(x=210, y=260)
 
-    # Email section
     tk.Label(root, text="Email (To)", fg="black", font=("Calibri", 12)).place(x=10, y=310)
     email_to_var = tk.StringVar()
     tk.Entry(root, textvariable=email_to_var, width=35, bd=0, font=("Arial", 12)).place(x=10, y=330)
@@ -250,7 +234,7 @@ def build_ui():
     tk.Entry(root, textvariable=smtp_pass_var, width=35, bd=0, font=("Arial", 12), show="*").place(x=10, y=480)
 
     encrypt_before_send_var = tk.BooleanVar(value=True)
-    tk.Checkbutton(root, text="🔒 Encrypt before sending", variable=encrypt_before_send_var, onvalue=True, offvalue=False).place(x=10, y=510)
+    tk.Checkbutton(root, text="Encrypt before sending", variable=encrypt_before_send_var, onvalue=True, offvalue=False).place(x=10, y=510)
 
     tk.Button(root, text="SEND EMAIL", height=2, width=35, bg="#6a5acd", fg="white", bd=0, command=send_email).place(x=10, y=540)
 
