@@ -18,6 +18,11 @@ Extra safety:
 - cryptography library  
 (Tkinter, smtplib, ssl, base64 are already in Python)
 
+# Gmail setup
+- Go to Google Account
+- Create an App Password
+- Use this App Password instead of your real Gmail password
+
 # How to install
 1. Download This Simple project from github.
 2. Run the app: open CMD, type  python securetext_mailer.py
@@ -32,14 +37,9 @@ To send mail:
 - (Tick "Encrypt before sending" if you want automatic encryption)
 - Press Send Email
 
-# Gmail setup
-- Go to Google Account
-- Create an App Password
-- Use this App Password instead of your real Gmail password
+ # APP UI
+![App working](https://raw.githubusercontent.com/FullKumar/SecureTextMailer/main/worksfollows.jpg)
 
- # Screenshot
-![App Screenshot](<img width="2976" height="3968" alt="[image" src="https://github.com/user-attachments/assets/61c10f9c-28f9-46a5-9d07-aca14fb842e9](https://github.com/FullKumar/SecureTextMailer/blob/main/worksfollows.jpg)" />
-)
 # Security Notes
 - Always use a strong password.
 - This tool is meant for personal / educational use.
