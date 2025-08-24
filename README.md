@@ -27,7 +27,7 @@ Extra safety:
 1. Download This Simple project from github.
 2. Run the app: open CMD, type  python securetext_mailer.py
 
-# Steps:
+# Work Process:
 - Write your message
 - Enter a secret key (password)
 - Press Encrypt to lock or Decrypt to unlock
