@@ -194,7 +194,7 @@ def build_ui():
 
     root = tk.Tk()
     root.geometry("420x640")
-    root.title(APP_NAME)
+    root.title(SecureTextMailer)
 
     try:
         icon_path = resource_path("keys.png")
